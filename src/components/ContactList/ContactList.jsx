@@ -1,7 +1,7 @@
 // import ContactItem from "components/ContactItem/ContactItem"
 // import PropTypes from 'prop-types'
 import { ContactListStyle, ContactItem, Line, DeleteButton} from "./ContactList.styled";
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 
 const ContactList = ({ contacts, onDelete }) => {
     return ( <ContactListStyle>
