@@ -9,8 +9,7 @@ import Filter from "./Filter/Filter";
 
 class App extends Component {
   state = {
-    contacts: [
-    ],
+    contacts: null,
     filter: '',
   }
 
@@ -18,25 +17,22 @@ class App extends Component {
 		const localData = localStorage.getItem('contacts')
 		if (localData && JSON.parse(localData).length > 0) {
 			this.setState({
-				todo: JSON.parse(localData),
+				contacts: JSON.parse(localData),
 			})
 		} else
 			this.setState({
 				contacts: data,
 			})
 	}
-  // createContactList = (data) => {
-	// 	const newList = {
-	// 		...data,
-	// 		id: nanoid(),
-	// 	}
-	// 	const isDuplicated = this.state.contacts.find((el) => el.name === data.name)
-	// 	if (isDuplicated) return
-	// 	this.setState((prev) => ({
-	// 		contacts: [...prev.contacts, newList],
-	// 	}))
-  //   console.log(this.state)
-  // }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.contacts?.length !== this.state.contacts.length)
+    localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
+
+    if(prevState.contacts?.length > this.state.contacts.length){
+this.setState({isDeleted:true})
+    }
+  }
 
   addContact = ({ name, number }) => {
     const normalizedName = name.toLowerCase();
@@ -64,8 +60,9 @@ class App extends Component {
     };
     this.setState(prevState => ({
       contacts: [...prevState.contacts, contact], 
-    }));
-    // console.log(contact)
+    }), Notify.success(`Contact ${name} has been added to your Contacts`)
+    );
+
   };
 
   changeFilter = (e) => {
@@ -77,24 +74,27 @@ class App extends Component {
     const { filter, contacts } = this.state;
     const normalizedFilter = filter.toLowerCase();
 
-    return contacts.filter(contact =>
+    return contacts && contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
 
-  deleteContacts = contactId => {
+  deleteContacts = (contactId, name) => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+    }), Notify.info(`Contact ${name} has been deleted from your Contacts`)
+    );
   };
 
 
   render(){ 
     const {filter} = this.state;
     const filteredContacts = this.filteredContacts();
+    // console.log(this.state.contacts)
 
   return (
     <>
+  
     <Section title="Phonebook">
       <AddContactForm onSubmit={this.addContact}/>
     </Section>
@@ -121,3 +121,18 @@ export default App;
     // >
     //   React homework template
     // </div>
+
+
+
+      // createContactList = (data) => {
+	// 	const newList = {
+	// 		...data,
+	// 		id: nanoid(),
+	// 	}
+	// 	const isDuplicated = this.state.contacts.find((el) => el.name === data.name)
+	// 	if (isDuplicated) return
+	// 	this.setState((prev) => ({
+	// 		contacts: [...prev.contacts, newList],
+	// 	}))
+  //   console.log(this.state)
+  // }
